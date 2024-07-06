@@ -1,0 +1,30 @@
+version: '3'
+services:
+  publisher:
+    build: ./publisher
+    environment:
+      - MQTT_BROKER_URL=mqtt://broker:1883
+    depends_on:
+      - broker
+
+  subscriber:
+    build: ./subscriber
+    environment:
+      - MQTT_BROKER_URL=mqtt://broker:1883
+    depends_on:
+      - broker
+
+  broker:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    command: /usr/sbin/mosquitto -c /mosquitto/config/mosquitto.conf
+
+networks:
+  default:
+    driver: bridge
